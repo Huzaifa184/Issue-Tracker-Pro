@@ -1,0 +1,62 @@
+﻿@page "{id:int}"
+
+@using Humanizer
+@using trackingapp.Extensions
+@model trackingapp.Pages.Issues.DetailModel
+
+<div class="mt-5">
+    @if (Model.Issue == null)
+    {
+        <div class="alert alert-warning" role="alert">
+            Issue not found
+        </div>
+    }
+    else
+    {
+        <div>
+            <h3>@Model.Issue.Title</h3>
+            <div class="mb-2">
+                <span class="badge bg-info">@Model.Issue.IssueType</span>
+                <span class="@Model.Issue.Priority.ToCssClass()">@Model.Issue.Priority</span>
+                <span class="badge bg-info">@Model.Issue.Created.Humanize(utcDate:false)</span>
+            </div>
+            <p>@Model.Issue.Description</p>
+            <form id="resolveForm" method="post" asp-page-handler="resolve" asp-route-id="@Model.Issue.Id">
+                <button id="resolveButton" type="submit" data-issueid="@Model.Issue.Id">Resolve</button>
+            </form>
+        </div>
+    }
+</div>
+
+
+    <script>
+        $(function () {
+            var resolveForm = document.getElementById('resolveForm');
+            var resolveBtn = document.getElementById('resolveButton');
+            resolveBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                var issueId = resolveBtn.getAttribute('data-issueid');
+
+            var headers = {};
+            headers['RequestVerificationToken'] = $('input[name="__RequestVerificationToken"]').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '?handler=resolve&id=' + issueId,
+                headers: headers,
+                data: $(resolveForm).serialize(),
+                success: function () {
+                    console.log('Issue ' + issueId + ' has been resolved');
+                    alert('Issue ' + issueId + ' has been resolved');
+                    window.location.href = '/';
+                    location.reload();
+                }, // Remove the extra comma here
+                error: function () {
+                    alert('Error resolving issue');
+                }
+            });
+
+
+
+

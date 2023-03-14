@@ -1,0 +1,160 @@
+﻿@page
+@model trackingapp.Pages.DownloadModel
+@{
+}
+@{
+    ViewData["Title"] = "Download Issues Now";
+}
+
+<style>
+    h1 {
+        text-align: center;
+    }
+
+    button[type="submit"] {
+        background-color: blue;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-bottom: 20px;
+    }
+
+    footer {
+        text-align: center;
+        margin-top: 50px;
+        padding: 10px 0;
+        background-color: #f1f1f1;
+    }
+
+        footer p {
+            font-size: 14px;
+        }
+
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    th, td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+
+        td:nth-child(1), th:nth-child(1) {
+            width: 5%;
+        }
+
+        td:nth-child(2), th:nth-child(2) {
+            width: 5%;
+        }
+
+        td:nth-child(3), th:nth-child(3) {
+            width: 15%;
+        }
+
+        td:nth-child(4), th:nth-child(4) {
+            width: 25%;
+        }
+
+        td:nth-child(5), th:nth-child(5) {
+            width: 10%;
+        }
+
+        td:nth-child(6), th:nth-child(6) {
+            width: 10%;
+        }
+
+        td:nth-child(7), th:nth-child(7) {
+            width: 10%;
+        }
+
+        td:nth-child(8), th:nth-child(8) {
+            width: 15%;
+        }
+
+    #selectIssueBtn {
+        margin-top: 20px;
+    }
+</style>
+
+<h1>Download Issues</h1>
+
+
+<form method="post" asp-page-handler="DownloadIssues">
+    <button type="submit" class="btn" id="selectIssueBtn">Download Selected Issues</button>
+
+    <table>
+        <thead>
+            <tr>
+                <th><input type="checkbox" id="selectAllCheckbox" /></th>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Type</th>
+                <th>Priority</th>
+                <th>Completed</th>
+                <th>Created</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @if (Model.Issues != null)
+            {
+                @foreach (var issue in Model.Issues)
+                {
+                    <tr>
+                        <td><input type="checkbox" name="selectedIssues" value="@issue.Id" /></td>
+                        <td>@issue.Id</td>
+                        <td>@issue.Title</td>
+                        <td>@issue.Description</td>
+                        <td>@issue.IssueType</td>
+                        <td>@issue.Priority</td>
+                        <td>@issue.Completed</td>
+                        <td>@issue.Created.ToString("yyyy-MM-dd")</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</form>
+
+
+
+<script>
+    var form = document.querySelector("form");
+    form.addEventListener("submit", function (event) {
+        var selectedIssueIds = getSelectedIssueIds();
+        if (selectedIssueIds.length === 0) {
+            alert('Please select at least one issue to download.');
+            event.preventDefault();
+            return;
+        }
+    });
+
+    function getSelectedIssueIds() {
+        var issueIds = [];
+        var checkboxes = document.getElementsByName("selectedIssues");
+        for (var i = 0; i < checkboxes.length; i++) {
+            var checkbox = checkboxes[i];
+            if (checkbox.checked) {
+                var issueId = parseInt(checkbox.value);
+                issueIds.push(issueId);
+            }
+        }
+        return issueIds;
+    }
+
+    document.getElementById("selectAllCheckbox").addEventListener("click", function () {
+        var checkboxes = document.getElementsByName("selectedIssues");
+        for (var i = 0; i < checkboxes.length; i++) {
+            checkboxes[i].checked = this.checked;
+        }
+    });
+</script>
